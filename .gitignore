@@ -1,0 +1,5 @@
+applogin.egg-info
+dist
+__pycache__
+.postgres.env
+.applogin.env

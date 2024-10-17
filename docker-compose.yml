@@ -1,0 +1,29 @@
+services:
+    applogin:
+        container_name: backend-applogin
+        restart: always
+        build:
+            context: ./build/applogin
+        depends_on:
+            - postgres
+        volumes:
+            - "./src/:/home/applogin"
+        ports:
+            - '8080:8080'
+        env_file:
+          - .applogin.env
+          - .postgres.env
+    postgres:
+        container_name: postgres-applogin
+        restart: always
+        build:
+            context: ./build/postgres
+        volumes: 
+            - "applogin_data:/var/lib/postgresql/data"
+        env_file:
+          - .postgres.env
+        expose:
+            - 5432
+volumes:
+    src:
+    applogin_data:

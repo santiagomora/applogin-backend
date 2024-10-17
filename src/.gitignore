@@ -1,0 +1,7 @@
+.local
+applogin.egg-info
+.ash_history
+.python_history
+dist
+.cache
+build
