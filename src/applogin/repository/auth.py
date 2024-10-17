@@ -71,10 +71,18 @@ class AuthRepository:
                 session.commit()
         return id
 
-    def get_user_data(self, email, data):
+    def get_user_data_by_email(self, email, data):
         res = {}
         with Session(self._engine) as session:
             user = session.scalars(select(User).where(User.email == email)).one()
+            for d in data:
+                res[d] = getattr(user, d, None)
+        return res
+
+    def get_user_data_by_id(self, id, data):
+        res = {}
+        with Session(self._engine) as session:
+            user = session.scalars(select(User).where(User.id == id)).one()
             for d in data:
                 res[d] = getattr(user, d, None)
         return res

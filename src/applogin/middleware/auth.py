@@ -14,7 +14,7 @@ class AuthMiddleware:
 
     async def __call__(self, scope, receive, send):
         request = Request(scope, receive)
-        auth_header = request.headers['Authorization']
+        auth_header = request.headers.get('Authorization', None)
         if auth_header is None:
             raise AccessForbiddenException('must login to access protected route')
         token = auth_header.split(' ')[1]

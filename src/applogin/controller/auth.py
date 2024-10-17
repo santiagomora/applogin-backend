@@ -8,7 +8,10 @@ from datetime import\
 from zoneinfo import\
     ZoneInfo
 from ..exception.validation import\
-    InvalidRequestBodyException
+    InvalidRequestBodyException,\
+    RequestValidationException
+from ..utils.error_bag import\
+    ErrorBag
 from ..exception.auth import\
     AccessForbiddenException
 import json
@@ -25,7 +28,7 @@ async def login(request):
     if not repo.is_password_valid(payload['email'], payload['password']):
         raise AccessForbiddenException(f'invalid password for user {payload["email"]}')
     now = datetime.now(ZoneInfo(os.getenv('TZ')))
-    user_data = repo.get_user_data(payload["email"], ('id', 'name', 'lastname', ))
+    user_data = repo.get_user_data_by_email(payload["email"], ('id', 'name', 'lastname', ))
     payload = {**user_data,
                'exp': now + timedelta(hours=int(os.getenv('JWT_TIMEDELTA'))),
                'iat': now}
@@ -45,6 +48,14 @@ async def logout(request):
     return JSONResponse({'message': 'success',
                          'type': 'logout_successful',
                          'detail': 'see you later!'})
+
+
+async def test(request):
+    repo = AuthRepository(request.state.engine)
+    user_data = repo.get_user_data_by_id(request.state.current_user_id, ('name', ))
+    return JSONResponse({'message': 'success',
+                         'type': 'test_successful',
+                         'detail': f'route "{request.query_params["route"]}" reachable by user {user_data["name"]}'})
 
 
 async def register(request):
